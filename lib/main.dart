@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget{
 
   const MyApp({super.key});
 
-  @overridegit 
+  @override 
   Widget build(BuildContext context){
     return const Text(
       'Hello World!',
