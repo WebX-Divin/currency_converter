@@ -1,8 +1,16 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class ConverterPage extends StatelessWidget{
-  const ConverterPage({super.key});
+class CurrencyConverterPage extends StatefulWidget{
+  const CurrencyConverterPage({super.key});
+
+  @override
+  State<CurrencyConverterPage> createState() => _ConverterPage();
+}
+
+class _ConverterPage extends State<CurrencyConverterPage>{
+
+  double result = 0;
+  final TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context){
@@ -18,12 +26,18 @@ class ConverterPage extends StatelessWidget{
 
     return Scaffold(
       backgroundColor: Colors.blueGrey,
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey,
+        elevation: 0,
+        title: const Text('Currency Converter'),
+        centerTitle: true,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Currency Converter',
-            style: TextStyle(
+            Text(result.toString(),
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w400,
             ),
@@ -55,15 +69,18 @@ class ConverterPage extends StatelessWidget{
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if(kDebugMode){
-                    print('Button Clicked');
-                  }
+                  setState(() {
+                    result = double.parse(textEditingController.text) * 83.15;
+                  });
                 }, 
-                style: const ButtonStyle(
-                  elevation: MaterialStatePropertyAll(15),
-                  backgroundColor: MaterialStatePropertyAll(Colors.black),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white),
-                  minimumSize: MaterialStatePropertyAll(Size(double.infinity, 50)),
+                style: TextButton.styleFrom(
+                  elevation: 15,
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  )
                 ),
                 child: const Text('Convert'),
               ),
