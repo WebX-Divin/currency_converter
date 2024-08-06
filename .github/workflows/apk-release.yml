@@ -48,7 +48,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: app-release.apk
-          path: app-release.apk
+          path: ./app-release.apk 
+
+      - name: Verify APK path
+        run: ls -la ./app-release.apk 
 
       - name: Get current version
         id: get_version
@@ -75,13 +78,13 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git add version.txt
           git commit -m "Bump version to ${{ env.NEW_VERSION }}"
-          git push https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }} HEAD:flutLab
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }} HEAD:flutLab
 
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
         with:
           tag_name: ${{ env.NEW_VERSION }}
           release_name: Release ${{ env.NEW_VERSION }}
