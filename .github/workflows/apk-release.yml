@@ -21,7 +21,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # Replace with the Flutter version that includes Dart SDK >= 3.1.0
+          flutter-version: '3.13.0' 
 
       - name: Install dependencies
         run: flutter pub get
@@ -39,11 +39,41 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Download APK
         uses: actions/download-artifact@v2
         with:
           name: app-release.apk
           path: app-release.apk
+
+      - name: Get current version
+        id: get_version
+        run: echo "CURRENT_VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
+      - name: Increment version
+        id: increment_version
+        run: |
+          CURRENT_VERSION=${{ env.CURRENT_VERSION }}
+          IFS='.' read -r -a version_parts <<< "$CURRENT_VERSION"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
+          patch=$((patch + 1))
+          NEW_VERSION="$major.$minor.$patch"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo $NEW_VERSION > version.txt
+
+      - name: Commit new version
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add version.txt
+          git commit -m "Bump version to ${{ env.NEW_VERSION }}"
+          git push
 
       - name: Create GitHub Release
         id: create_release
@@ -51,15 +81,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
         with:
-          tag_name: ${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          tag_name: ${{ env.NEW_VERSION }}
+          release_name: Release ${{ env.NEW_VERSION }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./app-release.apk
