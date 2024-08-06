@@ -21,7 +21,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' 
+          flutter-version: '3.13.0' # Replace with the Flutter version that includes Dart SDK >= 3.1.0
 
       - name: Install dependencies
         run: flutter pub get
@@ -48,10 +48,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: app-release.apk
-          path: ./app-release.apk 
+          path: ./ # Download to the current directory
 
-      - name: Verify APK path
-        run: ls -la ./app-release.apk 
+      - name: Verify APK file
+        run: ls -la app-release.apk # Verify the file exists and is not a directory
 
       - name: Get current version
         id: get_version
@@ -84,7 +84,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
           tag_name: ${{ env.NEW_VERSION }}
           release_name: Release ${{ env.NEW_VERSION }}
@@ -94,7 +94,7 @@ jobs:
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./app-release.apk
